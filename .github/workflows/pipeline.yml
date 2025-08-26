@@ -18,27 +18,34 @@ jobs:
       - run: npm ci
       - run: npm run eslint
       - run: npm run build --if-present
-      - name: Check tests
-        run: npm run test
+      - run: npm run test
       - name: e2e tests
         uses: cypress-io/github-action@v6.10.2
         with:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
+          
       - if: ${{ github.event_name == 'push' }}
         name: Wait for Render Deployment
         uses: JorgeLNJunior/render-deploy@v1.4.5
         with:
           service_id: ${{ secrets.RENDER_SERVICE_ID }}
           api_key: ${{ secrets.RENDER_API_KEY }}
+          
   tag_release:
     if: ${{ github.event_name == 'push' }}
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.75.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: '0'
+    
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.75.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEFAULT_BUMP: patch
