@@ -35,7 +35,6 @@ jobs:
           api_key: ${{ secrets.RENDER_API_KEY }}
           
   tag_release:
-    env: 
     if: ${{ !contains(toJson(github.event.head_commit.message), '#SKIP') && github.event_name == 'push'}}
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
