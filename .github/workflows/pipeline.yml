@@ -7,6 +7,7 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize]
+
 jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
@@ -25,7 +26,8 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
-      - if: ${{ github.event_name == 'push' || contains(github.event.head_commit.message, '#skip')}}
+
+      - if: ${{ !contains(toJson(github.event.head_commit.message), '#SKIP') && github.event_name == 'push'}}}
         name: Wait for Render Deployment
         uses: JorgeLNJunior/render-deploy@v1.4.5
         with:
@@ -33,7 +35,8 @@ jobs:
           api_key: ${{ secrets.RENDER_API_KEY }}
           
   tag_release:
-    if: ${{ github.event_name == 'push' || contains(github.event.head_commit.message, '#skip')}}
+    env: 
+    if: ${{ !contains(toJson(github.event.head_commit.message), '#SKIP') && github.event_name == 'push'}}
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
     permissions:
