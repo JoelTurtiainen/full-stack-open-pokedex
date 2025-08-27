@@ -27,7 +27,7 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
 
-      - if: ${{ !contains(toJson(github.event.head_commit.message), '#SKIP') && github.event_name == 'push'}}}
+      - if: ${{ !contains(toJson(github.event.head_commit.message), '#SKIP') && github.event_name == 'push'}}
         name: Wait for Render Deployment
         uses: JorgeLNJunior/render-deploy@v1.4.5
         with:
